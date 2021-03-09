@@ -14,6 +14,15 @@ const init = () => {
   });
 
   window.ipc.setup();
+
+  window.messageToInjected = () => {
+    setTimeout(() => {
+      window.ipc.send("hello", {
+        message: "hello"
+      });
+    }, 3000);
+  }
 }
 
 window.onload = init;
+

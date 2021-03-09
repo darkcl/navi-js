@@ -38,7 +38,6 @@ export class IPC {
   }
 
   public send(topic: string, data: any) {
-    console.log(`[${this.domain}] send topic: ${topic}`)
     this.sender({
       topic,
       data,
@@ -66,11 +65,9 @@ export class IPC {
   }
 
   private setupSender(): EventSender {
-    console.log(`[IPC] setupSender`);
     switch (this.domain) {
       case "injected": {
         return (payload) => {
-          console.log(`[Inject] send message: ${JSON.stringify(payload)}`)
           window.postMessage(payload, "*")
         }
       }
@@ -88,7 +85,21 @@ export class IPC {
   }
 
   private setupInjected() {
-    console.log("TO BE IMPLEMENTED");
+    window.addEventListener(
+      "message",
+      async (ev) => {
+        const message = ev.data;
+        if (message.channel === this.name && message.destination === "injected") {
+          if (this.eventReceiver[message.topic]) {
+            const result = await this.eventReceiver[message.topic]({
+              channel: this.name,
+              topic: message.topic,
+              data: message.data,
+            });
+            return result;
+          }
+        }
+      });
   }
 
 
@@ -96,21 +107,25 @@ export class IPC {
     window.addEventListener(
       "message",
       (ev) => {
-        if (ev.data.channel === this.name) {
-          console.log('[IPC.Proxy] Received: ', JSON.stringify(ev.data));
-
-          chrome.runtime.sendMessage(ev.data, function (response) {
-            console.log('[IPC.Proxy] Received Response: ', JSON.stringify(response));
-          });
+        if (ev.data.channel === this.name && ev.data.destination !== "injected") {
+          chrome.runtime.sendMessage(ev.data, (response) => { });
         }
       },
       true
     );
+
+    chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+      if (msg.channel === this.name) {
+        window.postMessage({
+          destination: "injected",
+          ...msg
+        }, "*");
+      }
+    });
   }
 
   private setupBackground() {
     chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
-      console.log('[IPC.Background] Received: ', JSON.stringify(message));
       if (this.eventReceiver[message.topic]) {
         const result = await this.eventReceiver[message.topic]({
           channel: this.name,

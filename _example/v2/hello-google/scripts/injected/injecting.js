@@ -11,9 +11,6 @@ const injected = () => {
 
   waitFor('ipc', () => {
     window.ipc.setContext({ name: "hello-google", domain: "injected" });
-    window.greeter = () => {
-      console.log("[Google] Hello Google");
-    }
 
     const floatingContainer = document.createElement("div");
     floatingContainer.className = "navi-container";
@@ -29,5 +26,13 @@ const injected = () => {
       });
     };
     floatingContainer.appendChild(floatingButton);
+
+    window.ipc.on('hello', (ev) => {
+      console.log("[Injected] Hello is triggered");
+      console.log(ev.data);
+      floatingButton.innerHTML = ev.data.message;
+    });
+
+    window.ipc.setup();
   });
 }
