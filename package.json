@@ -1,13 +1,12 @@
 {
-  "name": "navi-js",
+  "name": "navi-chrome-js",
   "version": "1.0.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "dist/navi.min.js",
   "repository": "git@github.com:darkcl/navi-js.git",
   "author": "Yeung Yiu Hung <446404+darkcl@users.noreply.github.com>",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist/navi.min.js"
   ],
   "scripts": {
     "patch": "npm version patch && npm publish && git push",

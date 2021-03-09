@@ -16,22 +16,18 @@
     "http://www.google.com/*",
     "https://www.google.com/*"
   ],
-  "web_accessible_resources": [
-    "scripts/vendor/navi.min.js"
-  ],
   "content_scripts": [
     {
       "matches": [
         "https://www.google.com/*"
       ],
       "js": [
-        "scripts/vendor/navi.min.js",
         "scripts/injected/injecting.js",
         "scripts/extension/content-script.js"
       ]
     }
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://unpkg.com/ 'unsafe-eval'; object-src 'self'",
   "background": {
     "page": "background.html",
     "persistent": true
