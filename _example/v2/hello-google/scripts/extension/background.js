@@ -1,14 +1,19 @@
 const init = () => {
   console.log("[Background] Init background script");
 
-  initMessage();
+  window.ipc.setContext({
+    name: "hello-google",
+    domain: "background"
+  })
 
-  window.ipc.onInjectEvent('button_clicked', () => {
+  window.ipc.on('button_clicked', () => {
     console.log("[Background] Button Clicked");
+    return {
+      foo: "bazz"
+    }
   });
 
-
-  window.ipc.setupBackground();
+  window.ipc.setup();
 }
 
 window.onload = init;
