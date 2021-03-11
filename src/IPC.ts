@@ -4,7 +4,14 @@ interface IPCPayload {
   data: any,
 }
 
-type ExtensionDomain = "background" | "content" | "injected"
+export interface INaviSendParams {
+  domain: ExtensionDomain;
+  channel: string;
+  topic: string;
+  data: any;
+}
+
+export type ExtensionDomain = "background" | "content" | "injected"
 type EventSender = (payload: IPCPayload) => void;
 type EventReceiver = (payload: IPCPayload) => Promise<any>;
 
@@ -12,11 +19,14 @@ export class IPC {
   private eventReceiver: { [key: string]: EventReceiver }
   private sender: EventSender;
 
+  public isSetup: boolean;
+
   constructor(
-    public name: string,
-    public domain: ExtensionDomain
+    public channel: string,
+    public domain: ExtensionDomain,
   ) {
     this.eventReceiver = {};
+    this.isSetup = false;
     this.sender = this.setupSender();
   }
 
@@ -27,7 +37,7 @@ export class IPC {
     name: string,
     domain: ExtensionDomain
   }) {
-    this.name = name;
+    this.channel = name;
     this.domain = domain;
 
     this.sender = this.setupSender();
@@ -41,7 +51,7 @@ export class IPC {
     this.sender({
       topic,
       data,
-      channel: this.name
+      channel: this.channel
     });
   }
 
@@ -49,14 +59,17 @@ export class IPC {
     switch (this.domain) {
       case "background": {
         this.setupBackground();
+        this.isSetup = true;
       }
         break;
       case "content": {
         this.setupProxy();
+        this.isSetup = true;
       }
         break;
       case "injected": {
         this.setupInjected();
+        this.isSetup = true;
       }
         break;
       default:
@@ -89,10 +102,10 @@ export class IPC {
       "message",
       async (ev) => {
         const message = ev.data;
-        if (message.channel === this.name && message.destination === "injected") {
+        if (message.channel === this.channel && message.destination === "injected") {
           if (this.eventReceiver[message.topic]) {
             const result = await this.eventReceiver[message.topic]({
-              channel: this.name,
+              channel: this.channel,
               topic: message.topic,
               data: message.data,
             });
@@ -107,7 +120,7 @@ export class IPC {
     window.addEventListener(
       "message",
       (ev) => {
-        if (ev.data.channel === this.name && ev.data.destination !== "injected") {
+        if (ev.data.channel === this.channel && ev.data.destination !== "injected") {
           chrome.runtime.sendMessage(ev.data, (response) => { });
         }
       },
@@ -115,7 +128,7 @@ export class IPC {
     );
 
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-      if (msg.channel === this.name) {
+      if (msg.channel === this.channel) {
         window.postMessage({
           destination: "injected",
           ...msg
@@ -128,7 +141,7 @@ export class IPC {
     chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
       if (this.eventReceiver[message.topic]) {
         const result = await this.eventReceiver[message.topic]({
-          channel: this.name,
+          channel: this.channel,
           topic: message.topic,
           data: message.data,
         });

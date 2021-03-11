@@ -1,4 +1,28 @@
-import { IPC } from './IPC';
+import { IPC, INaviSendParams, ExtensionDomain } from './IPC';
+import { NaviError } from './Error';
 
-const { naviDomain, naviChannel } = (window as any);
-(window as any).ipc = new IPC(naviDomain, naviChannel);
+declare global {
+  interface Window {
+    naviDomain: ExtensionDomain;
+    naviSend: (params: INaviSendParams) => Promise<any>;
+
+    naviChannels: { [key: string]: IPC };
+  }
+}
+
+window.naviChannels = {};
+window.naviSend = async ({
+  domain, topic, data, channel,
+}: INaviSendParams) => {
+  if (!window.naviDomain) throw NaviError.missingDomain();
+
+  if (!window.naviChannels[channel]) {
+    window.naviChannels[channel] = new IPC(channel, window.naviDomain);
+  }
+
+  const chan = window.naviChannels[channel];
+
+  if (!chan.isSetup) chan.setup();
+
+  chan.send(topic, data);
+}
