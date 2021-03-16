@@ -1,6 +1,6 @@
 {
   "name": "navi-chrome-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/navi.min.js",
   "repository": "git@github.com:darkcl/navi-js.git",
   "author": "Yeung Yiu Hung <446404+darkcl@users.noreply.github.com>",
