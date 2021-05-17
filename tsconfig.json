@@ -9,7 +9,7 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "skipLibCheck": true
+    "skipLibCheck": false
   },
-  "exclude": ["./dist"]
+  "exclude": ["dist"]
 }

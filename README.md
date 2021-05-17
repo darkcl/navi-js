@@ -10,7 +10,7 @@ This library only manage messages between `injected-script`, `content-script` an
 
 ```html
 <script src="./scripts/extension/background.js"></script>
-<script src="https://unpkg.com/navi-chrome-js@1.0.1/dist/navi.min.js"></script>
+<script src="https://unpkg.com/navi-chrome-js@1.1.0/dist/umd/navi.js"></script>
 ```
 
 ```js
@@ -48,14 +48,13 @@ window.onload = init;
 
 ```js
 // This will load navi in content script
-const res = await fetch("https://unpkg.com/navi-chrome-js@1.0.0/dist/navi.min.js");
-const script = await res.text();
-eval(script);
+const res = await import("https://unpkg.com/navi-chrome-js@1.1.0/dist/es/navi.js");
+window.ipc = res.default;
 window.ipc.setContext({ name: "hello-google", domain: "content" });
 
 // Injecting into webpage
 const ipcScript = document.createElement("script");
-ipcScript.src = "https://unpkg.com/navi-chrome-js@1.0.0/dist/navi.min.js";
+ipcScript.src = "https://unpkg.com/navi-chrome-js@1.1.0/dist/umd/navi.js";
 document.documentElement.appendChild(ipcScript);
 
 // Your injected script
