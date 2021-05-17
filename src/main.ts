@@ -1,6 +1,19 @@
-import { IPC } from "./ipc/base";
+import { BackgroundIpc, InjectedIpc, ContentScriptIpc } from "./ipc/mod";
+import InvalidInputError from "./errors/InvalidInputError";
 
-const { naviDomain, naviChannel } = window as any;
-const ipc = new IPC(naviDomain, naviChannel);
+import type { IPCProps } from "./ipc/base";
 
-export default ipc;
+export function create(...[channel, domain]: IPCProps) {
+  switch (domain) {
+    case "background":
+      return new BackgroundIpc(channel, domain);
+    case "content":
+      return new ContentScriptIpc(channel, domain);
+    case "injected":
+      return new InjectedIpc(channel, domain);
+    default:
+      throw new InvalidInputError(
+        `incorrect "domain", only accept "background", "injected", "content"`
+      );
+  }
+}

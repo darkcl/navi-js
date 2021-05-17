@@ -22,7 +22,7 @@ const base = {
 export default [
   {
     // generate type file, and type-checking
-    input: "src/types.d.ts",
+    input: "src/main.ts",
     output: [{ file: "dist/types.d.ts", format: "es" }],
     plugins: [dts()],
   },
