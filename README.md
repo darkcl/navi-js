@@ -2,7 +2,7 @@
 
 Messaging in chrome extension sucks, just like navi
 
-This library only manage messages between `injected-script`, `content-script` and `background-script`, designed for Manifest V2
+This library only manage messages between `injected-script`, `content-script` and `background-script`
 
 ## Setup
 
@@ -48,9 +48,7 @@ window.onload = init;
 
 ```js
 // This will load navi in content script
-const res = await fetch(
-  "https://unpkg.com/navi-chrome-js@1.0.0/dist/navi.min.js"
-);
+const res = await fetch("https://unpkg.com/navi-chrome-js@1.0.0/dist/navi.min.js");
 const script = await res.text();
 eval(script);
 window.ipc.setContext({ name: "hello-google", domain: "content" });

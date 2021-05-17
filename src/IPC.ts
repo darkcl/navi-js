@@ -1,37 +1,30 @@
-interface IPCPayload {
-  channel: string,
-  topic: string,
-  data: any,
+export interface IPCPayload<T = unknown> {
+  channel: string;
+  topic: string;
+  data: T;
 }
 
-type ExtensionDomain = "background" | "content" | "injected"
-type EventSender = (payload: IPCPayload) => void;
-type EventReceiver = (payload: IPCPayload) => Promise<any>;
+export type ExtensionDomain = "background" | "content" | "injected";
+export type EventSender<T = unknown> = (payload: IPCPayload<T>) => void;
+export type EventReceiver<T = unknown> = (payload: IPCPayload<T>) => Promise<any>;
+
+type SetContextParms = { name: string; domain: ExtensionDomain };
 
 export class IPC {
-  private eventReceiver: { [key: string]: EventReceiver }
+  private eventReceiver: { [key: string]: EventReceiver };
   private sender: EventSender;
 
-  constructor(
-    public name: string,
-    public domain: ExtensionDomain
-  ) {
+  constructor(public name: string, public domain: ExtensionDomain) {
     this.eventReceiver = {};
     this.sender = this.setupSender();
-    
+
     this.setContext = this.setContext.bind(this);
     this.on = this.on.bind(this);
     this.send = this.send.bind(this);
     this.setup = this.setup.bind(this);
   }
 
-  public setContext({
-    name,
-    domain
-  }: {
-    name: string,
-    domain: ExtensionDomain
-  }) {
+  public setContext({ name, domain }: SetContextParms) {
     this.name = name;
     this.domain = domain;
 
@@ -46,23 +39,26 @@ export class IPC {
     this.sender({
       topic,
       data,
-      channel: this.name
+      channel: this.name,
     });
   }
 
   public setup() {
     switch (this.domain) {
-      case "background": {
-        this.setupBackground();
-      }
+      case "background":
+        {
+          this.setupBackground();
+        }
         break;
-      case "content": {
-        this.setupProxy();
-      }
+      case "content":
+        {
+          this.setupProxy();
+        }
         break;
-      case "injected": {
-        this.setupInjected();
-      }
+      case "injected":
+        {
+          this.setupInjected();
+        }
         break;
       default:
         return;
@@ -73,47 +69,44 @@ export class IPC {
     switch (this.domain) {
       case "injected": {
         return (payload) => {
-          window.postMessage(payload, "*")
-        }
+          window.postMessage(payload, "*");
+        };
       }
       case "background": {
         return (payload) => {
           chrome.tabs.query({ currentWindow: true, active: true }, async (tabs) => {
-            chrome.tabs.sendMessage((tabs[0] as any).id, payload, async (res) => { });
+            chrome.tabs.sendMessage((tabs[0] as any).id, payload, async (res) => {});
           });
-        }
+        };
       }
       default: {
-        return (_payload) => { }
+        return (_payload) => {};
       }
     }
   }
 
   private setupInjected() {
-    window.addEventListener(
-      "message",
-      async (ev) => {
-        const message = ev.data;
-        if (message.channel === this.name && message.destination === "injected") {
-          if (this.eventReceiver[message.topic]) {
-            const result = await this.eventReceiver[message.topic]({
-              channel: this.name,
-              topic: message.topic,
-              data: message.data,
-            });
-            return result;
-          }
+    window.addEventListener("message", async (ev) => {
+      const message = ev.data;
+      if (message.channel === this.name && message.destination === "injected") {
+        if (this.eventReceiver[message.topic]) {
+          const result = await this.eventReceiver[message.topic]({
+            channel: this.name,
+            topic: message.topic,
+            data: message.data,
+          });
+          return result;
         }
-      });
+      }
+    });
   }
-
 
   private setupProxy() {
     window.addEventListener(
       "message",
       (ev) => {
         if (ev.data.channel === this.name && ev.data.destination !== "injected") {
-          chrome.runtime.sendMessage(ev.data, (response) => { });
+          chrome.runtime.sendMessage(ev.data, (response) => {});
         }
       },
       true
@@ -121,10 +114,13 @@ export class IPC {
 
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (msg.channel === this.name) {
-        window.postMessage({
-          destination: "injected",
-          ...msg
-        }, "*");
+        window.postMessage(
+          {
+            destination: "injected",
+            ...msg,
+          },
+          "*"
+        );
       }
     });
   }

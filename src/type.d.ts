@@ -1,4 +1,4 @@
-import { IPC } from "./IPC";
+import ipc, { IPC } from "./IPC";
 
 declare global {
   interface Window {
@@ -6,14 +6,7 @@ declare global {
   }
 }
 
-export interface IPCPayload<T = unknown> {
-  channel: string;
-  topic: string;
-  data: T;
-}
+declare var ipc: IPC;
 
-export type ExtensionDomain = "background" | "content" | "injected";
-export type EventSender<T = unknown> = (payload: IPCPayload<T>) => void;
-export type EventReceiver<T = unknown> = (
-  payload: IPCPayload<T>
-) => Promise<any>;
+export default ipc;
+export { IPCPayload, ExtensionDomain, EventReceiver, EventSender } from "./IPC";
