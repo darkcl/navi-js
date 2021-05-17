@@ -2,7 +2,7 @@
 
 Messaging in chrome extension sucks, just like navi
 
-This library only manage messages between `injected-script`, `content-script` and `background-script`
+This library only manage messages between `injected-script`, `content-script` and `background-script`, designed for Manifest V2
 
 ## Setup
 
