@@ -46,7 +46,7 @@ export default [
     output: {
       file: "dist/umd/navi.js",
       format: "umd",
-      name: "ipc",
+      name: "NaviIPC",
     },
   },
 ];
