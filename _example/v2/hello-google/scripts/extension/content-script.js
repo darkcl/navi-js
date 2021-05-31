@@ -17,9 +17,9 @@ console.log("Injected Script");
   handlerScript.text = `(${injected.toString()})();`;
   document.documentElement.appendChild(handlerScript);
 
-  // intercept message, if background script send a broadcast message
+  // eavesdrop message, if background script send a broadcast message
   window.ipc.on("hello", (ev) => {
-    console.log("[Content] intercept message");
+    console.log("[Content] eavesdrop message");
     console.log("from content", ev.data);
   });
 })();
