@@ -7,11 +7,10 @@ const injected = () => {
         callback();
       }
     }, 200);
-  }
+  };
 
-  waitFor('ipc', () => {
-    window.ipc.setContext({ name: "hello-google", domain: "injected" });
-
+  waitFor("NaviIPC", () => {
+    window.ipc = window.NaviIPC.create("hello-google", "injected");
     const floatingContainer = document.createElement("div");
     floatingContainer.className = "navi-container";
     document.documentElement.appendChild(floatingContainer);
@@ -22,12 +21,12 @@ const injected = () => {
       console.log("Click the button");
 
       window.ipc.send("button_clicked", {
-        foo: "bar"
+        foo: "bar",
       });
     };
     floatingContainer.appendChild(floatingButton);
 
-    window.ipc.on('hello', (ev) => {
+    window.ipc.on("hello", (ev) => {
       console.log("[Injected] Hello is triggered");
       console.log(ev.data);
       floatingButton.innerHTML = ev.data.message;
@@ -35,4 +34,4 @@ const injected = () => {
 
     window.ipc.setup();
   });
-}
+};

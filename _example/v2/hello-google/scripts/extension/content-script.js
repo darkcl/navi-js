@@ -1,10 +1,8 @@
 console.log("Injected Script");
 
 (async () => {
-  const res = await fetch("https://unpkg.com/navi-chrome-js@1.0.0/dist/navi.min.js");
-  const script = await res.text();
-  eval(script);
-  window.ipc.setContext({ name: "hello-google", domain: "content" });
+  const NaviIPC = await import("https://unpkg.com/navi-chrome-js@1.1.0/dist/es/navi.js");
+  window.ipc = NaviIPC.create("hello-google", "content");
 
   console.log("[Content] IPC", window.ipc);
 
@@ -12,10 +10,16 @@ console.log("Injected Script");
   window.ipc.setup();
 
   const ipcScript = document.createElement("script");
-  ipcScript.src = "https://unpkg.com/navi-chrome-js@1.0.0/dist/navi.min.js";
+  ipcScript.src = "https://unpkg.com/navi-chrome-js@1.1.0/dist/umd/navi.js";
   document.documentElement.appendChild(ipcScript);
 
   const handlerScript = document.createElement("script");
   handlerScript.text = `(${injected.toString()})();`;
   document.documentElement.appendChild(handlerScript);
+
+  // intercept message, if background script send a broadcast message
+  window.ipc.on("hello", (ev) => {
+    console.log("[Content] intercept message");
+    console.log("from content", ev.data);
+  });
 })();

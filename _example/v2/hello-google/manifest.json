@@ -18,13 +18,8 @@
   ],
   "content_scripts": [
     {
-      "matches": [
-        "https://www.google.com/*"
-      ],
-      "js": [
-        "scripts/injected/injecting.js",
-        "scripts/extension/content-script.js"
-      ]
+      "matches": ["https://www.google.com/*"],
+      "js": ["scripts/injected/injecting.js", "scripts/extension/content-script.js"]
     }
   ],
   "content_security_policy": "script-src 'self' https://unpkg.com/ 'unsafe-eval'; object-src 'self'",

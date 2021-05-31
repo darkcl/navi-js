@@ -11,7 +11,7 @@ export default class InjectedIpc extends IPC {
   public setup() {
     globalThis.addEventListener("message", async (ev) => {
       const { channel, destination = "*", topic } = ev.data as IPCPayload;
-      if (channel === this.name && (destination === "*" || destination === "background")) {
+      if (channel === this.name && (destination === "*" || destination === "injected")) {
         const cb = this.eventReceiverMap.get(topic);
         if (cb) {
           await cb(ev.data);

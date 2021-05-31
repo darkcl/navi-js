@@ -35,7 +35,7 @@ export default class ContentScriptIpc extends IPC {
       if (channel === this.name) {
         // send to injected
         if (destination === "*" || destination === "injected") {
-          globalThis.postMessage(msg, "*");
+          globalThis.postMessage({ ...msg, destination: "injected" }, "*");
         }
         // trigger callbacks of content script
         if (destination === "*" || destination === "content") {
