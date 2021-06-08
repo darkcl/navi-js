@@ -18,6 +18,11 @@ export class IPC {
   ) {
     this.eventReceiver = {};
     this.sender = this.setupSender();
+    
+    this.setContext = this.setContext.bind(this);
+    this.on = this.on.bind(this);
+    this.send = this.send.bind(this);
+    this.setup = this.setup.bind(this);
   }
 
   public setContext({
