@@ -2,7 +2,7 @@ export type IPCPayload<T = unknown> = {
   channel: string;
   topic: string;
   destination: ExtensionDomain | "*";
-  data: T;
+  data?: T;
 };
 
 export type ExtensionDomain = "background" | "content" | "injected";

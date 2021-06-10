@@ -37,7 +37,7 @@ export default class IPC {
     this.eventReceiverMap.set(topic, cb);
   }
 
-  public send(topic: string, data: any, destination: ExtensionDomain | "*" = "*") {
+  public send(topic: string, data?: any, destination: ExtensionDomain | "*" = "*") {
     this.sender({
       topic,
       data,
