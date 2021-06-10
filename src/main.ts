@@ -2,6 +2,10 @@ import { BackgroundIpc, InjectedIpc, ContentScriptIpc } from "./ipc/mod";
 import InvalidInputError from "./errors/InvalidInputError";
 
 import type { IPCProps } from "./ipc/base";
+import type * as IPCTypes from "./ipc/types";
+
+export type IPCPayload = IPCTypes.IPCPayload;
+export type ExtensionDomain = IPCTypes.ExtensionDomain;
 
 export function create(...[channel, domain]: IPCProps) {
   switch (domain) {
